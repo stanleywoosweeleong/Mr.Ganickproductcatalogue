@@ -79,12 +79,12 @@
     @media (min-width:760px){ .grid-cards{grid-template-columns:repeat(2,1fr);} }
     @media (min-width:1200px){ .grid-cards{grid-template-columns:repeat(3,1fr);} }
     /* product detail: compact image to the right of the header on all sizes */
-    .pd-head{display:flex;flex-direction:row;gap:11px;margin-bottom:13px;align-items:stretch;}
+    .pd-head{display:flex;flex-direction:row;gap:11px;margin-bottom:13px;align-items:flex-start;}
     .pd-head > .pd-header{flex:1 1 auto;min-width:0;}
-    .pd-head > .pd-image{flex:0 0 110px;width:110px;margin:0;}
+    .pd-head > .pd-image{flex:0 0 78px;width:78px;margin:0;}
     @media (min-width:760px){
       .pd-head{gap:13px;}
-      .pd-head > .pd-image{flex:0 0 180px;width:180px;}
+      .pd-head > .pd-image{flex:0 0 120px;width:120px;}
     }
   </style>
 
@@ -1405,7 +1405,7 @@ const h = React.createElement;
 // App version — bump on every meaningful correction so users (and dealers) can
 // confirm they're on the current, authoritative version. This app supersedes
 // the printed catalogue wherever they differ.
-const APP_VERSION = "1.10.5";
+const APP_VERSION = "1.10.7";
 const APP_UPDATED = "2026-06-17";
 
 /* ---- tiny helpers --------------------------------------------------------- */
@@ -1923,7 +1923,7 @@ function ProductImage({ product, lang }) {
 
   return h("div", { className: "pd-image", style: { margin: "0", display: "flex", flexDirection: "column", gap: 6 } },
     h("div", {
-      style: { width: "100%", flex: "1 1 auto", minHeight: 90, aspectRatio: "1 / 1", background: "var(--paper-2)", border: "1px solid var(--line)",
+      style: { width: "100%", aspectRatio: "1 / 1", background: "var(--paper-2)", border: "1px solid var(--line)",
         borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden",
         boxShadow: "var(--shadow)" } },
       src
