@@ -78,6 +78,14 @@
     .grid-cards{display:grid;grid-template-columns:1fr;gap:10px;}
     @media (min-width:760px){ .grid-cards{grid-template-columns:repeat(2,1fr);} }
     @media (min-width:1200px){ .grid-cards{grid-template-columns:repeat(3,1fr);} }
+    /* product detail: compact image to the right of the header on all sizes */
+    .pd-head{display:flex;flex-direction:row;gap:11px;margin-bottom:13px;align-items:stretch;}
+    .pd-head > .pd-header{flex:1 1 auto;min-width:0;}
+    .pd-head > .pd-image{flex:0 0 110px;width:110px;margin:0;}
+    @media (min-width:760px){
+      .pd-head{gap:13px;}
+      .pd-head > .pd-image{flex:0 0 180px;width:180px;}
+    }
   </style>
 
   <!-- Mr. Ganick logo favicon -->
@@ -1397,7 +1405,7 @@ const h = React.createElement;
 // App version — bump on every meaningful correction so users (and dealers) can
 // confirm they're on the current, authoritative version. This app supersedes
 // the printed catalogue wherever they differ.
-const APP_VERSION = "1.10.1";
+const APP_VERSION = "1.10.5";
 const APP_UPDATED = "2026-06-17";
 
 /* ---- tiny helpers --------------------------------------------------------- */
@@ -1467,7 +1475,7 @@ const T = {
     silwetToggle: "加入 Organic Silwet 硅透皇 (增强渗透)",
     silwetHint: "病害防治／雨季时，Mr. Ganick 建议加入硅透皇以增强有机药剂对叶面角质层的渗透。",
     silwetRow: "Organic Silwet 硅透皇 (渗透增强)",
-    imgUpload: "上传产品图片", imgUploading: "上传中…", imgReset: "恢复默认图", imgNone: "暂无图片",
+    imgUpload: "上传照片", imgUploading: "上传中…", imgReset: "恢复默认图", imgNone: "暂无图片",
     imgBadType: "请选择图片文件。", imgReadErr: "图片读取失败，请重试。",
     cropTitle: "拖动调整裁剪范围（4:3）", cropConfirm: "确定裁剪", cropCancel: "取消",
     noComboPartner: "此应用无有机搭配产品。",
@@ -1531,7 +1539,7 @@ const T = {
     silwetToggle: "Add Organic Silwet (boost penetration)",
     silwetHint: "For disease control / wet season, Mr. Ganick recommends adding Organic Silwet to boost the organic spray's penetration into the leaf cuticle.",
     silwetRow: "Organic Silwet (penetration boost)",
-    imgUpload: "Upload product image", imgUploading: "Uploading…", imgReset: "Reset to default", imgNone: "No image",
+    imgUpload: "Upload image", imgUploading: "Uploading…", imgReset: "Reset to default", imgNone: "No image",
     imgBadType: "Please choose an image file.", imgReadErr: "Could not read the image, please try again.",
     cropTitle: "Drag to set the crop area (4:3)", cropConfirm: "Crop & save", cropCancel: "Cancel",
     noComboPartner: "No organic combo product for this use.",
@@ -1913,22 +1921,22 @@ function ProductImage({ product, lang }) {
   };
   const onReset = async () => { await imgDel(product.id); setSrc(fallback); };
 
-  return h("div", { style: { margin: "13px 0" } },
+  return h("div", { className: "pd-image", style: { margin: "0", display: "flex", flexDirection: "column", gap: 6 } },
     h("div", {
-      style: { width: "100%", aspectRatio: "4 / 3", background: "var(--paper-2)", border: "1px solid var(--line)",
-        borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden",
+      style: { width: "100%", flex: "1 1 auto", minHeight: 90, aspectRatio: "1 / 1", background: "var(--paper-2)", border: "1px solid var(--line)",
+        borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden",
         boxShadow: "var(--shadow)" } },
       src
         ? h("img", { src, alt: product.name, style: { maxWidth: "92%", maxHeight: "92%", objectFit: "contain" } })
-        : h("span", { style: { color: "var(--ink-soft)", fontSize: ".82rem" } }, t.imgNone)),
-    h("div", { style: { display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center", marginTop: 8 } },
-      h("label", { style: { fontSize: ".74rem", fontWeight: 700, color: "var(--leaf-dk)", background: "var(--leaf-lt)",
-        border: "1px solid var(--leaf)", padding: "5px 11px", borderRadius: 99, cursor: "pointer" } },
+        : h("span", { style: { color: "var(--ink-soft)", fontSize: ".72rem", textAlign: "center", padding: "0 6px" } }, t.imgNone)),
+    h("div", { style: { display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center" } },
+      h("label", { style: { fontSize: ".68rem", fontWeight: 700, color: "var(--leaf-dk)", background: "var(--leaf-lt)",
+        border: "1px solid var(--leaf)", padding: "4px 9px", borderRadius: 99, cursor: "pointer", textAlign: "center" } },
         busy ? t.imgUploading : ("⬆ " + t.imgUpload),
-        h("input", { type: "file", accept: "image/*", onChange: onFile, style: { display: "none" } })),
+        h("input", { id: "product-image-file", name: "product-image-file", type: "file", accept: "image/*", onChange: onFile, style: { display: "none" } })),
       src && src !== fallback && h("button", { onClick: onReset,
-        style: { fontSize: ".74rem", fontWeight: 700, color: "var(--ink-soft)", background: "#fff",
-          border: "1px solid var(--line)", padding: "5px 11px", borderRadius: 99, cursor: "pointer" } }, t.imgReset)),
+        style: { fontSize: ".68rem", fontWeight: 700, color: "var(--ink-soft)", background: "#fff",
+          border: "1px solid var(--line)", padding: "4px 9px", borderRadius: 99, cursor: "pointer" } }, t.imgReset)),
     cropSrc && h(ImageCropper, { srcUrl: cropSrc, lang, onConfirm: onCropped, onCancel: () => setCropSrc(null) }),
   );
 }
@@ -1941,22 +1949,24 @@ function ProductDetail({ product, lang, onBack, initialProblem }) {
     ? Math.max(0, product.uses.findIndex(u => u.problem === initialProblem))
     : 0;
   return h("div", { className: "fade-in" },
-    // header — faithfully matches the product's PDF label banner colour
-    h("div", { style: { background: banner, color: "#fff", borderRadius: 18, padding: "16px 17px", boxShadow: "var(--shadow-lg)" } },
-      h("div", { style: { display: "flex", alignItems: "baseline", gap: 9, flexWrap: "wrap" } },
-        h("span", { style: { fontWeight: 800, fontSize: "1.3rem", letterSpacing: "-.01em" } }, product.name),
-        h("span", { style: { fontWeight: 700, fontSize: "1.05rem", color: "rgba(255,255,255,.82)" } }, product.zh),
+    h("div", { className: "pd-head" },
+      // header — faithfully matches the product's PDF label banner colour
+      h("div", { className: "pd-header", style: { background: banner, color: "#fff", borderRadius: 18, padding: "16px 17px", boxShadow: "var(--shadow-lg)" } },
+        h("div", { style: { display: "flex", alignItems: "baseline", gap: 9, flexWrap: "wrap" } },
+          h("span", { style: { fontWeight: 800, fontSize: "1.3rem", letterSpacing: "-.01em" } }, product.name),
+          h("span", { style: { fontWeight: 700, fontSize: "1.05rem", color: "rgba(255,255,255,.82)" } }, product.zh),
+        ),
+        h("div", { style: { fontSize: ".86rem", color: "rgba(255,255,255,.9)", marginTop: 5, lineHeight: 1.45 } },
+          lang === "zh" ? product.blurb_zh : product.blurb_en),
+        h("div", { style: { display: "flex", gap: 7, flexWrap: "wrap", marginTop: 12 } },
+          h("span", { style: { background: "rgba(255,255,255,.2)", padding: "3px 9px", borderRadius: 99, fontSize: ".74rem", fontWeight: 700 } }, t.form + ": " + product.form),
+          h("span", { style: { background: "rgba(255,255,255,.2)", padding: "3px 9px", borderRadius: 99, fontSize: ".74rem", fontWeight: 700 } }, product.packs.join(" · ")),
+          h("span", { style: { background: "rgba(255,255,255,.2)", padding: "3px 9px", borderRadius: 99, fontSize: ".74rem", fontWeight: 700 } }, "PHI 0 " + t.days),
+        ),
       ),
-      h("div", { style: { fontSize: ".86rem", color: "rgba(255,255,255,.9)", marginTop: 5, lineHeight: 1.45 } },
-        lang === "zh" ? product.blurb_zh : product.blurb_en),
-      h("div", { style: { display: "flex", gap: 7, flexWrap: "wrap", marginTop: 12 } },
-        h("span", { style: { background: "rgba(255,255,255,.2)", padding: "3px 9px", borderRadius: 99, fontSize: ".74rem", fontWeight: 700 } }, t.form + ": " + product.form),
-        h("span", { style: { background: "rgba(255,255,255,.2)", padding: "3px 9px", borderRadius: 99, fontSize: ".74rem", fontWeight: 700 } }, product.packs.join(" · ")),
-        h("span", { style: { background: "rgba(255,255,255,.2)", padding: "3px 9px", borderRadius: 99, fontSize: ".74rem", fontWeight: 700 } }, "PHI 0 " + t.days),
-      ),
+      // product image — default PDF-extracted, user-uploadable
+      h(ProductImage, { product, lang }),
     ),
-    // product image — default PDF-extracted, user-uploadable, tap to enlarge
-    h(ProductImage, { product, lang }),
     // specs
     h("div", { style: { display: "flex", gap: 7, flexWrap: "wrap", margin: "13px 0" } },
       h(MixBadge, { cls: product.mixClass, lang }),
@@ -2159,6 +2169,7 @@ function LookupTab({ lang, onOpenProblem, onOpenProduct, favs, onToggleFav }) {
     h("div", { style: { position: "relative", marginBottom: 11 } },
       h("span", { style: { position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", color: "var(--ink-soft)" } }, h(Ico, { d: I.search, size: 19 })),
       h("input", {
+        id: "search", name: "search", "aria-label": t.searchPh, autoComplete: "off",
         value: q, onChange: e => setQ(e.target.value), placeholder: t.searchPh, type: "search",
         style: { width: "100%", padding: "12px 38px 12px 42px", borderRadius: 13, border: "1px solid var(--line)",
           background: "var(--paper-2)", fontSize: "1rem", color: "var(--ink)" },
@@ -2422,7 +2433,7 @@ function InlineCalc({ product, fixedUseIdx, lang, initialUseIdx }) {
             border: "1px solid " + (tank === v ? "var(--leaf)" : "var(--line)"),
             background: tank === v ? "var(--leaf)" : "#fff", color: tank === v ? "#fff" : "var(--ink-soft)" },
         }, v + "L"))),
-      h("input", { type: "number", min: 1, max: 1000, value: tank,
+      h("input", { id: "tank-size", name: "tank-size", "aria-label": lang === "zh" ? "水箱容量 (L)" : "Tank size (L)", type: "number", min: 1, max: 1000, value: tank,
         placeholder: lang === "zh" ? "自定义 (L)" : "Custom (L)",
         onChange: e => setTankPersist(+e.target.value || 1),
         style: { ...selStyle, width: 150, background: "#fff" } })),
