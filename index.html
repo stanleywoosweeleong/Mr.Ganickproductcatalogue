@@ -1397,7 +1397,7 @@ const h = React.createElement;
 // App version — bump on every meaningful correction so users (and dealers) can
 // confirm they're on the current, authoritative version. This app supersedes
 // the printed catalogue wherever they differ.
-const APP_VERSION = "1.11.0";
+const APP_VERSION = "1.11.1";
 const APP_UPDATED = "2026-06-17";
 
 /* ---- tiny helpers --------------------------------------------------------- */
@@ -1693,23 +1693,36 @@ function PartnerList({ use, lang, items, accent }) {
       t.noPartners);
   }
   return h("div", { style: { marginTop: 6 } },
-    list.map((p, i) => h("div", {
-      key: i,
-      style: { display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline",
-        padding: "7px 0", borderTop: i ? "1px solid var(--line)" : "none" }
-    },
-      h("span", { style: { fontSize: ".84rem", fontWeight: 600 } }, p.name),
-      h("span", { style: { fontSize: ".82rem", color: col, fontWeight: 700, whiteSpace: "nowrap", textAlign: "right", display: "inline-flex", alignItems: "center", gap: 5, justifyContent: "flex-end", flexWrap: "wrap" } },
-        locDose(p.dose, lang),
+    list.map((p, i) => {
+      const dose = locDose(p.dose, lang);
+      // Long, multi-crop doses (e.g. "10-20 g (chilli); 8-15 g (starfruit); ...")
+      // don't fit on one line — stack the dose under the name, left-aligned.
+      const isLong = dose && (dose.includes(";") || dose.length > 18);
+      const badges = [
         p.corrected && h("span", {
-          title: t.correctedNote,
+          key: "c", title: t.correctedNote,
           style: { fontSize: ".62rem", fontWeight: 700, color: "#8a6d00", background: "var(--sun)", padding: "1px 6px", borderRadius: 99, whiteSpace: "nowrap" } },
           "✎ " + t.corrected),
         p.pending && h("span", {
-          title: t.pendingDoseNote,
+          key: "p", title: t.pendingDoseNote,
           style: { fontSize: ".62rem", fontWeight: 700, color: "#fff", background: "var(--c-red)", padding: "1px 6px", borderRadius: 99, whiteSpace: "nowrap" } },
-          "⏳ " + t.pendingDose)),
-    )),
+          "⏳ " + t.pendingDose),
+      ];
+      if (isLong) {
+        return h("div", { key: i, style: { padding: "7px 0", borderTop: i ? "1px solid var(--line)" : "none" } },
+          h("div", { style: { fontSize: ".84rem", fontWeight: 600, marginBottom: 2 } }, p.name),
+          h("div", { style: { fontSize: ".82rem", color: col, fontWeight: 700, lineHeight: 1.5, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 } },
+            dose, ...badges));
+      }
+      return h("div", {
+        key: i,
+        style: { display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline",
+          padding: "7px 0", borderTop: i ? "1px solid var(--line)" : "none" }
+      },
+        h("span", { style: { fontSize: ".84rem", fontWeight: 600 } }, p.name),
+        h("span", { style: { fontSize: ".82rem", color: col, fontWeight: 700, whiteSpace: "nowrap", textAlign: "right", display: "inline-flex", alignItems: "center", gap: 5, justifyContent: "flex-end", flexWrap: "wrap" } },
+          dose, ...badges));
+    }),
   );
 }
 
