@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 
   <style>
     /* ====================================================================
@@ -65,6 +65,19 @@
     .fab{transition:transform .15s ease, background .15s ease;}
     .fab:hover{transform:scale(1.05);background:var(--paper-2);}
     .fab:active{transform:scale(.96);}
+    /* ---- responsive layout: phone-first, flows wider on tablet/desktop ---- */
+    .wrap{max-width:760px;margin:0 auto;}
+    @media (min-width:1000px){ .wrap{max-width:1000px;} }
+    @media (min-width:1280px){ .wrap{max-width:1180px;} }
+    /* pest / disease / category tiles: 3 on phone, more as the screen widens */
+    .grid-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    @media (min-width:640px){ .grid-tiles{grid-template-columns:repeat(4,1fr);gap:10px;} }
+    @media (min-width:900px){ .grid-tiles{grid-template-columns:repeat(5,1fr);gap:12px;} }
+    @media (min-width:1200px){ .grid-tiles{grid-template-columns:repeat(6,1fr);} }
+    /* product cards: single column on phone, multi-column on wider screens */
+    .grid-cards{display:grid;grid-template-columns:1fr;gap:10px;}
+    @media (min-width:760px){ .grid-cards{grid-template-columns:repeat(2,1fr);} }
+    @media (min-width:1200px){ .grid-cards{grid-template-columns:repeat(3,1fr);} }
   </style>
 
   <!-- Mr. Ganick logo favicon -->
@@ -915,9 +928,9 @@ const PROBLEMS = [
   // pests
   { id: "broad_prevent", kind: "pest", zh: "广泛性预防 (>10 种害虫)", en: "Broad-spectrum prevention (>10 pests)", crops: ["general"] },
   { id: "aphid", kind: "pest", zh: "蚜虫", en: "Aphid", crops: ["general"] },
+  { id: "durian_leafhopper", kind: "pest", zh: "榴莲青蚊 (叶子焦/干枝尾)", en: "Durian leafhopper", crops: ["durian"] },
   { id: "whitefly", kind: "pest", zh: "白粉蝶", en: "Whitefly", crops: ["vegetable"] },
   { id: "scale", kind: "pest", zh: "介壳虫", en: "Scale insect", crops: ["fruit", "durian"] },
-  { id: "durian_leafhopper", kind: "pest", zh: "榴莲青蚊 (叶子焦/干枝尾)", en: "Durian leafhopper", crops: ["durian"] },
   { id: "psyllid", kind: "pest", zh: "木虱", en: "Psyllid", crops: ["fruit", "durian"] },
   { id: "mealybug", kind: "pest", zh: "粉蚧 (蜜虫)", en: "Mealybug", crops: ["fruit", "durian"] },
   { id: "borer_heart", kind: "pest", zh: "蛀心虫", en: "Stem / heart borer", crops: ["durian"] },
@@ -1384,7 +1397,7 @@ const h = React.createElement;
 // App version — bump on every meaningful correction so users (and dealers) can
 // confirm they're on the current, authoritative version. This app supersedes
 // the printed catalogue wherever they differ.
-const APP_VERSION = "1.9.6";
+const APP_VERSION = "1.10.1";
 const APP_UPDATED = "2026-06-17";
 
 /* ---- tiny helpers --------------------------------------------------------- */
@@ -1489,7 +1502,7 @@ const T = {
     shopShare: "Share with a friend on WhatsApp",
     shopPreviewLabel: "WhatsApp message preview",
     shopPreviewHint: "Tap the button below to pick a contact and send",
-    tabMix: "Tank-Mix Order",
+    tabMix: "Tank-Mix",
     mixIntro: "Add products to the spray tank in this order to maximise efficacy and avoid the formulations interfering with each other.",
     mixLegend: "Mr. Ganick product mixing colour code",
     mixGlyphosate: "Never tank-mix insecticides or fungicides with Glyphosate.",
@@ -2172,7 +2185,7 @@ function LookupTab({ lang, onOpenProblem, onOpenProduct, favs, onToggleFav }) {
     ),
     // results
     prodMatches.length > 0 && h(Section, { title: t.tabBrowse, lang },
-      h("div", { style: { display: "grid", gap: 10 } }, favSorted(prodMatches, favs).map(p => h(ProductCard, { key: p.id, product: p, lang, onOpen: onOpenProduct, isFav: favs && favs.has(p.id), onToggleFav })))),
+      h("div", { className: "grid-cards" }, favSorted(prodMatches, favs).map(p => h(ProductCard, { key: p.id, product: p, lang, onOpen: onOpenProduct, isFav: favs && favs.has(p.id), onToggleFav })))),
     pests.length > 0 && h(Section, { title: t.pests, lang },
       h(ProblemGrid, { items: pests, lang, onOpen: onOpenProblem })),
     diseases.length > 0 && h(Section, { title: t.diseases, lang },
@@ -2189,7 +2202,7 @@ function Section({ title, children }) {
 }
 
 function ProblemGrid({ items, lang, onOpen }) {
-  return h("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(96px,1fr))", gap: 8 } },
+  return h("div", { className: "grid-tiles" },
     items.map(p => {
       return h("button", {
         key: p.id, onClick: () => onOpen(p.id), className: "tile fade-in",
@@ -2213,7 +2226,7 @@ function BrowseTab({ lang, onOpenProduct, favs, onToggleFav }) {
   const list = favSorted(catSorted(cat === "all" ? PRODUCTS : PRODUCTS.filter(p => p.cat === cat)), favs);
   const catLabel = c => c === "all" ? CROP_LABELS.all[lang] : (lang === "zh" ? CATS[c].zh : CATS[c].en);
   return h("div", null,
-    h("div", { style: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 7, marginBottom: 14 } },
+    h("div", { className: "grid-tiles", style: { marginBottom: 14 } },
       cats.map(c => {
         const on = cat === c;
         return h("button", {
@@ -2228,7 +2241,7 @@ function BrowseTab({ lang, onOpenProduct, favs, onToggleFav }) {
             color: on ? "var(--leaf-dk)" : "var(--ink-soft)" } }, catLabel(c)));
       }),
     ),
-    h("div", { style: { display: "grid", gap: 10 } },
+    h("div", { className: "grid-cards" },
       list.map(p => h(ProductCard, { key: p.id, product: p, lang, onOpen: onOpenProduct, isFav: favs && favs.has(p.id), onToggleFav }))),
   );
 }
@@ -2752,7 +2765,7 @@ function App() {
   return h("div", { style: { minHeight: "100vh", paddingBottom: "calc(140px + env(safe-area-inset-bottom,0))" } },
     // header
     h("header", { style: { background: "#fff", color: "var(--ink)", padding: "calc(env(safe-area-inset-top,0) + 12px) 16px 12px", position: "sticky", top: 0, zIndex: 40, borderBottom: "1px solid var(--line)", boxShadow: "0 2px 10px rgba(20,40,28,.06)" } },
-      h("div", { style: { maxWidth: 760, margin: "0 auto", display: "flex", alignItems: "center", gap: 11 } },
+      h("div", { className: "wrap", style: { display: "flex", alignItems: "center", gap: 11 } },
         // logo doubles as a hidden text-size control (tap to cycle S → M → L)
         h("button", {
           onClick: () => setScale(s => s === "s" ? "m" : s === "m" ? "l" : "s"),
@@ -2787,7 +2800,7 @@ function App() {
           lang === "zh" ? "EN" : "中文"),
       )),
     // body — with a top-right back-to-home arrow when branched off the home screen
-    h("main", { style: { maxWidth: 760, margin: "0 auto", padding: "16px 16px 0", position: "relative" } },
+    h("main", { className: "wrap", style: { padding: "16px 16px 0", position: "relative" } },
       (inDetail || tab !== "lookup") && h("div", { style: { display: "flex", justifyContent: "flex-end", marginBottom: 6 } },
         h("button", {
           onClick: () => { closeDetail(); setTab("lookup"); window.scrollTo({ top: 0, behavior: "smooth" }); },
@@ -2814,7 +2827,7 @@ function App() {
       h(Ico, { d: I.arrowUp, size: 20 })),
     // bottom nav
     h("nav", { style: { position: "fixed", bottom: 0, left: 0, right: 0, background: "var(--paper-2)", borderTop: "1px solid var(--line)", paddingBottom: "env(safe-area-inset-bottom,0)", zIndex: 50, boxShadow: "0 -2px 12px rgba(20,40,28,.06)" } },
-      h("div", { style: { maxWidth: 760, margin: "0 auto", display: "flex" } },
+      h("div", { className: "wrap", style: { display: "flex" } },
         navTabs.map(it => {
           const active = !inDetail && tab === it.id;
           const inner = [

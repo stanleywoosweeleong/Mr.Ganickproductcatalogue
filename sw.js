@@ -13,13 +13,13 @@
  *
  * Bump CACHE_VERSION to force every device to drop old caches.
  */
-const CACHE_VERSION = 'ganick-catalogue-v1.9.6';
+const CACHE_VERSION = 'ganick-catalogue-v1.10.1';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_VERSION).then((cache) =>
-      cache.addAll(['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable.png']).catch(() => {})
+      cache.addAll(['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable.png', './apple-touch-icon.png']).catch(() => {})
     )
   );
 });
