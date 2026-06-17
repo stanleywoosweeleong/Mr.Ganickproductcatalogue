@@ -78,14 +78,6 @@
     .grid-cards{display:grid;grid-template-columns:1fr;gap:10px;}
     @media (min-width:760px){ .grid-cards{grid-template-columns:repeat(2,1fr);} }
     @media (min-width:1200px){ .grid-cards{grid-template-columns:repeat(3,1fr);} }
-    /* product detail: compact image to the right of the header on all sizes */
-    .pd-head{display:flex;flex-direction:row;gap:11px;margin-bottom:13px;align-items:flex-start;}
-    .pd-head > .pd-header{flex:1 1 auto;min-width:0;}
-    .pd-head > .pd-image{flex:0 0 78px;width:78px;margin:0;}
-    @media (min-width:760px){
-      .pd-head{gap:13px;}
-      .pd-head > .pd-image{flex:0 0 120px;width:120px;}
-    }
   </style>
 
   <!-- Mr. Ganick logo favicon -->
@@ -1405,7 +1397,7 @@ const h = React.createElement;
 // App version — bump on every meaningful correction so users (and dealers) can
 // confirm they're on the current, authoritative version. This app supersedes
 // the printed catalogue wherever they differ.
-const APP_VERSION = "1.10.7";
+const APP_VERSION = "1.11.0";
 const APP_UPDATED = "2026-06-17";
 
 /* ---- tiny helpers --------------------------------------------------------- */
@@ -1893,7 +1885,7 @@ function ImageCropper({ srcUrl, lang, onConfirm, onCancel }) {
   );
 }
 
-function ProductImage({ product, lang }) {
+function ProductImage({ product, lang, embedded }) {
   const t = T[lang];
   const fallback = PRODUCT_IMG[product.id] || null;
   const [src, setSrc] = useState(fallback);
@@ -1920,6 +1912,27 @@ function ProductImage({ product, lang }) {
     await imgSet(product.id, dataUrl); setSrc(dataUrl); setBusy(false);
   };
   const onReset = async () => { await imgDel(product.id); setSrc(fallback); };
+
+  if (embedded) {
+    // Compact thumbnail that lives inside the coloured header banner (top-right).
+    return h("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 5, flex: "0 0 auto" } },
+      h("div", {
+        style: { width: 84, height: 84, background: "rgba(255,255,255,.92)", border: "1px solid rgba(255,255,255,.6)",
+          borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden",
+          boxShadow: "0 2px 6px rgba(0,0,0,.12)" } },
+        src
+          ? h("img", { src, alt: product.name, style: { maxWidth: "92%", maxHeight: "92%", objectFit: "contain" } })
+          : h("span", { style: { color: "var(--ink-soft)", fontSize: ".64rem", textAlign: "center", padding: "0 4px" } }, t.imgNone)),
+      h("label", { style: { fontSize: ".62rem", fontWeight: 700, color: "#fff", background: "rgba(255,255,255,.22)",
+        border: "1px solid rgba(255,255,255,.45)", padding: "3px 8px", borderRadius: 99, cursor: "pointer", textAlign: "center", whiteSpace: "nowrap" } },
+        busy ? t.imgUploading : ("⬆ " + t.imgUpload),
+        h("input", { id: "product-image-file", name: "product-image-file", type: "file", accept: "image/*", onChange: onFile, style: { display: "none" } })),
+      src && src !== fallback && h("button", { onClick: onReset,
+        style: { fontSize: ".62rem", fontWeight: 700, color: "#fff", background: "transparent",
+          border: "1px solid rgba(255,255,255,.45)", padding: "3px 8px", borderRadius: 99, cursor: "pointer", whiteSpace: "nowrap" } }, t.imgReset),
+      cropSrc && h(ImageCropper, { srcUrl: cropSrc, lang, onConfirm: onCropped, onCancel: () => setCropSrc(null) }),
+    );
+  }
 
   return h("div", { className: "pd-image", style: { margin: "0", display: "flex", flexDirection: "column", gap: 6 } },
     h("div", {
@@ -1949,9 +1962,9 @@ function ProductDetail({ product, lang, onBack, initialProblem }) {
     ? Math.max(0, product.uses.findIndex(u => u.problem === initialProblem))
     : 0;
   return h("div", { className: "fade-in" },
-    h("div", { className: "pd-head" },
-      // header — faithfully matches the product's PDF label banner colour
-      h("div", { className: "pd-header", style: { background: banner, color: "#fff", borderRadius: 18, padding: "16px 17px", boxShadow: "var(--shadow-lg)" } },
+    // header — coloured banner with the product image embedded top-right
+    h("div", { style: { background: banner, color: "#fff", borderRadius: 18, padding: "16px 17px", boxShadow: "var(--shadow-lg)", marginBottom: 13, display: "flex", gap: 13, alignItems: "flex-start" } },
+      h("div", { style: { flex: "1 1 auto", minWidth: 0 } },
         h("div", { style: { display: "flex", alignItems: "baseline", gap: 9, flexWrap: "wrap" } },
           h("span", { style: { fontWeight: 800, fontSize: "1.3rem", letterSpacing: "-.01em" } }, product.name),
           h("span", { style: { fontWeight: 700, fontSize: "1.05rem", color: "rgba(255,255,255,.82)" } }, product.zh),
@@ -1964,8 +1977,8 @@ function ProductDetail({ product, lang, onBack, initialProblem }) {
           h("span", { style: { background: "rgba(255,255,255,.2)", padding: "3px 9px", borderRadius: 99, fontSize: ".74rem", fontWeight: 700 } }, "PHI 0 " + t.days),
         ),
       ),
-      // product image — default PDF-extracted, user-uploadable
-      h(ProductImage, { product, lang }),
+      // product image — embedded in the banner, user-uploadable
+      h(ProductImage, { product, lang, embedded: true }),
     ),
     // specs
     h("div", { style: { display: "flex", gap: 7, flexWrap: "wrap", margin: "13px 0" } },

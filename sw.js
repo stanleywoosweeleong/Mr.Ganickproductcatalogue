@@ -13,7 +13,7 @@
  *
  * Bump CACHE_VERSION to force every device to drop old caches.
  */
-const CACHE_VERSION = 'ganick-catalogue-v1.10.7';
+const CACHE_VERSION = 'ganick-catalogue-v1.11.0';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
