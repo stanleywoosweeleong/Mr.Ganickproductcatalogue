@@ -78,6 +78,8 @@
     .grid-cards{display:grid;grid-template-columns:1fr;gap:10px;}
     @media (min-width:760px){ .grid-cards{grid-template-columns:repeat(2,1fr);} }
     @media (min-width:1200px){ .grid-cards{grid-template-columns:repeat(3,1fr);} }
+    /* two-step language toggle: highlighted "active" state */
+    .lang-active{background:var(--leaf-lt)!important;border-color:var(--leaf)!important;color:var(--leaf-dk)!important;}
   </style>
 
   <!-- Mr. Ganick logo favicon -->
@@ -1397,7 +1399,7 @@ const h = React.createElement;
 // App version — bump on every meaningful correction so users (and dealers) can
 // confirm they're on the current, authoritative version. This app supersedes
 // the printed catalogue wherever they differ.
-const APP_VERSION = "1.11.1";
+const APP_VERSION = "1.11.2";
 const APP_UPDATED = "2026-06-17";
 
 /* ---- tiny helpers --------------------------------------------------------- */
@@ -2718,6 +2720,10 @@ function App() {
     const saved = lsGet("ganick_lang", null);
     return (saved === "zh" || saved === "en") ? saved : "zh";
   });
+  // Two-step language toggle: first tap "activates" (highlights + shows the next-language
+  // hint) without switching; the next tap switches. Idle-resets after ~2.2s.
+  const [langActive, setLangActive] = useState(false);
+  const langIdleRef = useRef(null);
   const [scale, setScale] = useState(() => {
     const saved = lsGet("ganick_scale", null);
     return (saved === "s" || saved === "m" || saved === "l") ? saved : "m";
@@ -2774,6 +2780,22 @@ function App() {
   };
   const closeDetail = () => { setOpenProduct(null); setOpenProblem(null); setInitialProblem(null); };
 
+  // Two-step language toggle. First tap activates (highlight + next-language hint);
+  // each later tap (while active) switches. Idle for 2.2s resets to rest.
+  const LANG_CYCLE = ["zh", "en"];
+  const LANG_LBL = { zh: "中文", en: "EN" };
+  const armLangIdle = () => {
+    if (langIdleRef.current) clearTimeout(langIdleRef.current);
+    langIdleRef.current = setTimeout(() => setLangActive(false), 2200);
+  };
+  const onLangTap = () => {
+    if (!langActive) { setLangActive(true); armLangIdle(); return; }
+    setLang(l => LANG_CYCLE[(LANG_CYCLE.indexOf(l) + 1) % LANG_CYCLE.length]);
+    armLangIdle();
+  };
+  // Next language in the cycle (for the "→ EN" hint shown while active).
+  const nextLang = LANG_CYCLE[(LANG_CYCLE.indexOf(lang) + 1) % LANG_CYCLE.length];
+
   // Tab order in the nav: Catalogue is leftmost. "lookup" (Find by problem)
   // stays as the default landing screen and remains reachable, but is hidden
   // from the bottom nav (navHidden). Other buttons left as-is for now.
@@ -2827,14 +2849,16 @@ function App() {
             border: "1px solid " + ((!inDetail && tab === "about") ? "var(--leaf)" : "var(--line)"),
             boxShadow: "var(--shadow)", flex: "0 0 auto" } },
           h(Ico, { d: I.info, size: 18 })),
-        // lang — Layers icon + label, matching the MoA app's language toggle
-        h("button", { onClick: () => setLang(l => l === "zh" ? "en" : "zh"),
-          "aria-label": lang === "zh" ? "Switch to English" : "切换中文",
+        // lang — two-step toggle: rest shows the CURRENT language's own label;
+        // first tap highlights + shows the "→ next" hint; next tap switches.
+        h("button", { onClick: onLangTap,
+          className: langActive ? "lang-active" : "",
+          "aria-label": lang === "zh" ? "Switch language" : "切换语言",
           style: { display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 11,
             background: "#fff", color: "var(--ink-soft)", border: "1px solid var(--line)", boxShadow: "var(--shadow)",
-            fontWeight: 800, fontSize: ".82rem" } },
+            fontWeight: 800, fontSize: ".82rem", transition: "background .15s ease, border-color .15s ease" } },
           h(Ico, { d: I.layers, size: 16 }),
-          lang === "zh" ? "EN" : "中文"),
+          langActive ? ("→ " + LANG_LBL[nextLang]) : LANG_LBL[lang]),
       )),
     // body — with a top-right back-to-home arrow when branched off the home screen
     h("main", { className: "wrap", style: { padding: "16px 16px 0", position: "relative" } },
