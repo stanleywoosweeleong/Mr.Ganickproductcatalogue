@@ -790,6 +790,8 @@ const PRODUCTS = [
       { en: "Activated strains of Bacillus Subtilis & Trichoderma spp.", zh: "活性枯草芽孢杆菌与木霉菌株", pct: "99% w/w" },
       { en: "Natural PGPR (plant growth-promoting rhizobacteria)", zh: "天然植物根际促生菌（PGPR）", pct: "10% w/w" },
     ],
+    // The printed brochure gives 99% + 10% w/w (= 109%). Shown as printed until the company confirms.
+    labelNote: { zh: "成分比例按印刷目录（99% + 10%，合计超过100%），正确比例有待厂家确认。", en: "Percentages as printed in the brochure (99% + 10% adds up to more than 100%); the correct split is awaiting confirmation from the company." },
     blurb_zh: "榴莲黑心病 (严重)。搭配 BST BOOST 使用。", blurb_en: "Durian black heart-rot (severe). Used with BST BOOST.",
     uses: [
       { problem: "durian_black_heart_severe", solo: "½ 汤匙", mix: "½ 汤匙",
@@ -1396,7 +1398,7 @@ const h = React.createElement;
 // App version — bump on every meaningful correction so users (and dealers) can
 // confirm they're on the current, authoritative version. This app supersedes
 // the printed catalogue wherever they differ.
-const APP_VERSION = "1.11.4";
+const APP_VERSION = "1.11.5";
 const APP_UPDATED = "2026-06-17";
 
 /* ---- tiny helpers --------------------------------------------------------- */
@@ -2006,6 +2008,7 @@ function ProductDetail({ product, lang, onBack, initialProblem }) {
         h("span", null, lang === "zh" ? a.zh : a.en),
         h("span", { style: { fontWeight: 700, color: "var(--leaf-dk)", whiteSpace: "nowrap" } }, a.pct),
       )),
+      product.labelNote && h("p", { style: { fontSize: ".78rem", color: "#8a6d00", margin: "6px 0 0", lineHeight: 1.4 } }, "⚠ " + (lang === "zh" ? product.labelNote.zh : product.labelNote.en)),
     ),
     // uses
     h("div", { style: { fontWeight: 700, fontSize: ".82rem", color: "var(--ink-soft)", textTransform: "uppercase", letterSpacing: ".03em", margin: "0 0 9px" } }, t.usedFor),
@@ -2083,6 +2086,7 @@ function ProblemDetail({ problem, lang, onBack }) {
               product.ai.map((a, k) => h("div", { key: k, style: { display: "flex", justifyContent: "space-between", gap: 12, fontSize: ".82rem", padding: "2px 0" } },
                 h("span", null, lang === "zh" ? a.zh : a.en),
                 h("span", { style: { fontWeight: 700, color: "var(--leaf-dk)", whiteSpace: "nowrap" } }, a.pct))),
+              product.labelNote && h("p", { style: { fontSize: ".76rem", color: "#8a6d00", margin: "5px 0 0", lineHeight: 1.4 } }, "⚠ " + (lang === "zh" ? product.labelNote.zh : product.labelNote.en)),
             ),
             // dose block for this problem's use (no duplicate title)
             h(UseBlock, { product, use, lang, showProblemTitle: false, surface: "#fff" }),
