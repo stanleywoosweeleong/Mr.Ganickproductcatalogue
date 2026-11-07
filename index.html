@@ -516,7 +516,7 @@ const PRODUCTS = [
       { en: "Skin-grade aromatic oil", zh: "护肤级芳香油", pct: "60%" },
       { en: "Adjuvants & stabilizers", zh: "助剂与稳定剂", pct: "> 40%" },
     ],
-    blurb_zh: "白粉蝶、介壳虫与木虱。芳香油接触作用。", blurb_en: "Whitefly, scale & psyllid. Aromatic-oil contact action.",
+    blurb_zh: "白粉虱、介壳虫与木虱。芳香油接触作用。", blurb_en: "Whitefly, scale & psyllid. Aromatic-oil contact action.",
     uses: [
       { problem: "whitefly", solo: "20–40 ml", mix: "10–20 ml",
         partners: [
@@ -551,14 +551,13 @@ const PRODUCTS = [
     id: "lepid007", banner: "#201820", name: "LEPID 007 SL", zh: "鳞鳞清", form: "SL",
     cat: "insecticide", mixClass: "green", phi: 0, packs: ["20L", "1L"], pages: [6, 7, 9, 11],
     ai: [
-      { en: "Papillionaceae plant alkaloid", zh: "蝶形花科植物生物碱", pct: "0.61% w/w" },
+      { en: "Papilionaceae plant alkaloid", zh: "蝶形花科植物生物碱", pct: "0.61% w/w" },
       { en: "Adjuvants & stabilizers", zh: "助剂与稳定剂", pct: "> 99% w/w" },
     ],
     blurb_zh: "榴莲蛀果虫/蛀花虫与吊丝虫。", blurb_en: "Durian fruit/flower borer & webworm.",
     uses: [
       { problem: "durian_borer", solo: "12.5–25 ml", mix: "6.5–12.5 ml",
         partners: [
-          { name: "Chlorpyrifos - 45.9% EC", dose: "6–12 ml" },
           { name: "Cypermethrin - 4.6% EC", dose: "2.5–5 ml" },
           { name: "Cypermethrin - 20% EW", dose: "2.5–5 ml" },
           { name: "Lambda-Cyhalothrin - 2.8% EC", dose: "5–10 ml" },
@@ -754,7 +753,7 @@ const PRODUCTS = [
     cat: "bio", mixClass: "green", phi: 0, packs: ["600g"], pages: [9, 11, 13],
     ai: [
       { en: "Activated strains of Bacillus Subtilis & Trichoderma spp.", zh: "活性枯草芽孢杆菌与木霉菌株", pct: "90% w/w" },
-      { en: "Natural PGPR (Plant Growth Promoting Regulator)", zh: "天然植物生长促进菌", pct: "10% w/w" },
+      { en: "Natural PGPR (plant growth-promoting rhizobacteria)", zh: "天然植物根际促生菌（PGPR）", pct: "10% w/w" },
     ],
     blurb_zh: "蛀心虫与黑心病搭配、茄类青枯病。微生物根部保护。", blurb_en: "Pairs for borer & black heart-rot, tomato bacterial wilt. Microbial root protection.",
     uses: [
@@ -789,7 +788,7 @@ const PRODUCTS = [
     pending: true,
     ai: [
       { en: "Activated strains of Bacillus Subtilis & Trichoderma spp.", zh: "活性枯草芽孢杆菌与木霉菌株", pct: "99% w/w" },
-      { en: "Natural PGPR (Plant Growth Promoting Regulator)", zh: "天然植物生长促进菌", pct: "10% w/w" },
+      { en: "Natural PGPR (plant growth-promoting rhizobacteria)", zh: "天然植物根际促生菌（PGPR）", pct: "10% w/w" },
     ],
     blurb_zh: "榴莲黑心病 (严重)。搭配 BST BOOST 使用。", blurb_en: "Durian black heart-rot (severe). Used with BST BOOST.",
     uses: [
@@ -809,8 +808,8 @@ const PRODUCTS = [
     id: "bstboost", banner: "#201820", name: "BST BOOST SP", zh: "(BST BOOST)", form: "SP",
     cat: "bio", mixClass: "green", phi: 0, packs: ["100gm"], pages: [10],
     ai: [
-      { en: "Papillionaceae plant alkaloid", zh: "蝶形花科植物生物碱", pct: "0.61% w/w" },
-      { en: "Activated phosphonate salt", zh: "活性磷酸盐", pct: "> 99% w/w" },
+      { en: "Papilionaceae plant alkaloid", zh: "蝶形花科植物生物碱", pct: "0.61% w/w" },
+      { en: "Activated phosphonate salt", zh: "活性亚磷酸盐", pct: "> 99% w/w" },
     ],
     blurb_zh: "BST GOLD 的搭配伴侣 (系统性病害预防)。", blurb_en: "Companion to BST GOLD (systemic disease preventer).",
     uses: [
@@ -929,7 +928,7 @@ const PROBLEMS = [
   { id: "broad_prevent", kind: "pest", zh: "广泛性预防 (>10 种害虫)", en: "Broad-spectrum prevention (>10 pests)", crops: ["general"] },
   { id: "aphid", kind: "pest", zh: "蚜虫", en: "Aphid", crops: ["general"] },
   { id: "durian_leafhopper", kind: "pest", zh: "榴莲青蚊 (叶子焦/干枝尾)", en: "Durian leafhopper", crops: ["durian"] },
-  { id: "whitefly", kind: "pest", zh: "白粉蝶", en: "Whitefly", crops: ["vegetable"] },
+  { id: "whitefly", kind: "pest", zh: "白粉虱", en: "Whitefly", crops: ["vegetable"] },
   { id: "scale", kind: "pest", zh: "介壳虫", en: "Scale insect", crops: ["fruit", "durian"] },
   { id: "psyllid", kind: "pest", zh: "木虱", en: "Psyllid", crops: ["fruit", "durian"] },
   { id: "mealybug", kind: "pest", zh: "粉蚧 (蜜虫)", en: "Mealybug", crops: ["fruit", "durian"] },
@@ -1397,7 +1396,7 @@ const h = React.createElement;
 // App version — bump on every meaningful correction so users (and dealers) can
 // confirm they're on the current, authoritative version. This app supersedes
 // the printed catalogue wherever they differ.
-const APP_VERSION = "1.11.3";
+const APP_VERSION = "1.11.4";
 const APP_UPDATED = "2026-06-17";
 
 /* ---- tiny helpers --------------------------------------------------------- */
